@@ -34,7 +34,7 @@
 
     // Recommended Options
     "experimentalDecorators": true,               
-    "emitDecoratorMetadata": true,                    
+    "emitDecoratorMetadata":true,                    
     "strict": true,
     "jsx": "react-jsx",
     "verbatimModuleSyntax": true,

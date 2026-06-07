@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import express from "express";
 import "./database/connection.ts";
 import userRoute from "./routes/userRoute.ts";
