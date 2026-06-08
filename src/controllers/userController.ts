@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import User from "../models/userModel.ts";
 import bcrypt from "bcrypt";
+import generateToken from "../services/generateToken.ts";
 
 class UserController {
   static async register(req: Request, res: Response) {
@@ -56,8 +57,11 @@ class UserController {
           message: "Invalid credentials",
         });
       } else {
+        const token = generateToken(user.id);
+
         res.status(200).json({
           message: "Logged in",
+          token: token,
         });
       }
     }
