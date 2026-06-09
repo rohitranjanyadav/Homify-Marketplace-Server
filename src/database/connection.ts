@@ -7,7 +7,7 @@ const sequelize = new Sequelize(envConfig.connectionString as string, {
 });
 
 sequelize.addModels([User]);
-console.log(sequelize.models)
+console.log(sequelize.models);
 
 try {
   sequelize

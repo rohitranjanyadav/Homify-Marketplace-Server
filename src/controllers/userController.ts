@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import User from "../models/userModel.ts";
 import bcrypt from "bcrypt";
 import generateToken from "../services/generateToken.ts";
+import generateOtp from "../services/generateOtp.ts";
+import sendMail from "../services/sendMail.ts";
 
 class UserController {
   static async register(req: Request, res: Response) {
@@ -20,6 +22,12 @@ class UserController {
       username,
       email,
       password: bcrypt.hashSync(password, 10),
+    });
+
+    await sendMail({
+      to: email,
+      subject: "Registration Succeccfull on Homify",
+      text: "Thank you for joining Homify-Ecommerce",
     });
 
     res.status(201).json({
@@ -65,6 +73,37 @@ class UserController {
         });
       }
     }
+  }
+
+  static async handleForgotPassword(req: Request, res: Response) {
+    const { email } = req.body;
+
+    if (!email)
+      return res.status(400).json({ message: "Please provide email" });
+
+    const [user] = await User.findAll({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) return res.status(404).json({ message: "Email not registered" });
+
+    const otp = generateOtp();
+
+    await sendMail({
+      to: email,
+      subject: "Homify-Ecommerce Password Change Request",
+      text: `You requested to reset your password. The OTP is ${otp}`,
+    });
+
+    user.otp = otp.toString();
+    user.otpGeneratedTime = Date.now().toString();
+    await user.save();
+
+    res.status(200).json({
+      message: "Password Reset OTP sent!!!",
+    });
   }
 }
 
