@@ -5,6 +5,8 @@ import generateToken from "../services/generateToken.ts";
 import generateOtp from "../services/generateOtp.ts";
 import sendMail from "../services/sendMail.ts";
 import findData from "../services/findData.ts";
+import sendResponse from "../services/sendResponse.ts";
+import checkOtpExpiration from "../services/checkOtpExpiration.ts";
 
 class UserController {
   static async register(req: Request, res: Response) {
@@ -101,6 +103,60 @@ class UserController {
     res.status(200).json({
       message: "Password Reset OTP sent!!!",
     });
+  }
+
+  static async verifyOtp(req: Request, res: Response) {
+    const { otp, email } = req.body;
+
+    if (!otp || !email) {
+      sendResponse(res, 404, "Please provide OTP and email");
+      return;
+    }
+
+    const user = await findData(User, email);
+
+    if (!user) {
+      sendResponse(res, 404, "No user with that email");
+      return;
+    }
+
+    // OTP verification
+    const [data] = await User.findAll({
+      where: {
+        otp,
+        email,
+      },
+    });
+
+    if (!data) {
+      sendResponse(res, 404, "Invalid OTP");
+      return;
+    }
+    const otpGeneratedTime = data.otpGeneratedTime;
+    checkOtpExpiration(res, otpGeneratedTime, 120000);
+  }
+
+  static async resetPassword(req: Request, res: Response) {
+    const { newPassword, confirmPassword, email } = req.body;
+
+    if (!newPassword || !confirmPassword || !email) {
+      sendResponse(res, 400, "Please provide new password,email,otp");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      sendResponse(res, 400, "New password and confirm password must be same");
+      return;
+    }
+
+    const user = await findData(User, email);
+
+    if (!user) {
+      sendResponse(res, 404, "No user with that email");
+    }
+
+    user.password = bcrypt.hashSync(newPassword, 10);
+    await user.save();
+    sendResponse(res, 200, "Password reset successfully");
   }
 }
 
