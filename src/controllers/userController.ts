@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import generateToken from "../services/generateToken.ts";
 import generateOtp from "../services/generateOtp.ts";
 import sendMail from "../services/sendMail.ts";
+import findData from "../services/findData.ts";
 
 class UserController {
   static async register(req: Request, res: Response) {
@@ -81,11 +82,7 @@ class UserController {
     if (!email)
       return res.status(400).json({ message: "Please provide email" });
 
-    const [user] = await User.findAll({
-      where: {
-        email: email,
-      },
-    });
+    const user = await findData(User, email);
 
     if (!user) return res.status(404).json({ message: "Email not registered" });
 
