@@ -18,7 +18,7 @@ try {
   console.log(error);
 }
 
-sequelize.sync({ force: false }).then(() => {
+sequelize.sync({ force: false, alter: true }).then(() => {
   console.log("Local changes injected to Database successfully");
 });
 
