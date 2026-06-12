@@ -1,12 +1,14 @@
 import { Sequelize } from "sequelize-typescript";
 import { envConfig } from "../config/config.ts";
 import User from "../models/userModel.ts";
+import Product from "../models/productModel.ts";
 
 const sequelize = new Sequelize(envConfig.connectionString as string, {
   dialect: "postgres",
 });
 
 sequelize.addModels([User]);
+sequelize.addModels([Product]);
 console.log(sequelize.models);
 
 try {
@@ -18,7 +20,7 @@ try {
   console.log(error);
 }
 
-sequelize.sync({ force: false, alter: true }).then(() => {
+sequelize.sync({ force: false, alter: false }).then(() => {
   console.log("Local changes injected to Database successfully");
 });
 
