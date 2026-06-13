@@ -1,3 +1,4 @@
+import type { Request, Response } from "express";
 import Category from "../models/categoryModel.ts";
 
 class CategoryController {
@@ -21,6 +22,104 @@ class CategoryController {
       console.log("Categories seeded successfully");
     } else {
       console.log("Categories already seeded");
+    }
+  }
+
+  async addCategory(req: Request, res: Response): Promise<void> {
+    const { categoryName } = req.body;
+
+    if (!categoryName) {
+      res.status(400).json({
+        message: "Please provide categoryName",
+      });
+      return;
+    }
+
+    await Category.create({
+      categoryName,
+    });
+
+    res.status(200).json({
+      message: "Category created successfully ",
+    });
+  }
+
+  async getCategories(req: Request, res: Response): Promise<void> {
+    const data = await Category.findAll();
+
+    res.status(200).json({
+      message: "Fetched categories",
+      data,
+    });
+  }
+
+  async deleteCategory(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(400).json({
+        message: "Please provide id to delete",
+      });
+      return;
+    }
+
+    const data = await Category.findAll({
+      where: {
+        id: id,
+      },
+    }); // Returns array
+    // const data = await Category.findByPk(id) // Returns object
+
+    if (data.length === 0) {
+      res.status(404).json({
+        message: "No Category with that id",
+      });
+    } else {
+      await Category.destroy({
+        where: {
+          id,
+        },
+      });
+
+      res.status(200).json({
+        message: "Category deleted successfully",
+      });
+    }
+  }
+
+  async updateCategory(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    const { categoryName } = req.body;
+    if (!id || !categoryName) {
+      res.status(400).json({
+        message: "Please provide id, categoryName to update",
+      });
+      return;
+    }
+    const data = await Category.findAll({
+      where: {
+        id: id,
+      },
+    }); // array return
+    // const data = await Category.findByPk(id) // object return
+    if (data.length === 0) {
+      res.status(404).json({
+        message: "No category with that id",
+      });
+    } else {
+      await Category.update(
+        {
+          categoryName: categoryName,
+        },
+        {
+          where: {
+            id,
+          },
+        },
+      );
+      res.status(200).json({
+        message: "Category updated successfully",
+      });
     }
   }
 }
