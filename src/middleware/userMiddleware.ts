@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { envConfig } from "../config/config.ts";
 import User from "../models/userModel.ts";
 
-enum Role {
+export enum Role {
   Admin = "admin",
   Customer = "customer",
 }

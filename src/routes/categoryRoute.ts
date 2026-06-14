@@ -1,13 +1,13 @@
 import express, { Router } from "express";
 import categoryController from "../controllers/categoryController.ts";
-import userMiddleware from "../middleware/userMiddleware.ts";
+import userMiddleware,{Role} from "../middleware/userMiddleware.ts";
 
 const router: Router = express.Router();
 
 router
   .route("/")
   .get(categoryController.getCategories)
-  .post(userMiddleware.isUserLoggedIn, categoryController.addCategory);
+  .post(userMiddleware.isUserLoggedIn,userMiddleware.restrictTo(Role.Admin), categoryController.addCategory);
 
 router
   .route("/:id")
