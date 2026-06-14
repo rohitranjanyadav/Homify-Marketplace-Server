@@ -1,0 +1,16 @@
+import express, { Router } from "express";
+import categoryController from "../controllers/categoryController.ts";
+
+const router: Router = express.Router();
+
+router
+  .route("/")
+  .get(categoryController.getCategories)
+  .post(categoryController.addCategory);
+
+router
+  .route("/:id")
+  .patch(categoryController.updateCategory)
+  .delete(categoryController.deleteCategory);
+
+export default router;
