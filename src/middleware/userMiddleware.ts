@@ -9,7 +9,10 @@ class UserMiddleware {
     next: NextFunction,
   ): Promise<void> {
     // Receive Token
-    const token = req.headers.authorization;
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.slice(7)
+      : authHeader;
 
     if (!token) {
       res.status(403).json({
