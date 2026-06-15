@@ -67,6 +67,12 @@ class UserMiddleware {
       let userRole = req.user?.role as Role;
       console.log(userRole, "Role");
 
+      if (!req.user) {
+        return res.status(401).json({
+          message: "Please login first",
+        });
+      }
+
       if (!roles.includes(userRole)) {
         res.status(403).json({
           message: "You don't have permission",
