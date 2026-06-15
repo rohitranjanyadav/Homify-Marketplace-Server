@@ -26,4 +26,8 @@ sequelize.sync({ force: false, alter: false }).then(() => {
   console.log("Local changes injected to Database successfully");
 });
 
+// Relationships
+Product.belongsTo(Category);
+Category.hasOne(Product);
+
 export default sequelize;
