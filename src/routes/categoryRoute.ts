@@ -1,17 +1,24 @@
 import express, { Router } from "express";
 import categoryController from "../controllers/categoryController.ts";
-import userMiddleware,{Role} from "../middleware/userMiddleware.ts";
+import userMiddleware, { Role } from "../middleware/userMiddleware.ts";
 
 const router: Router = express.Router();
 
 router
   .route("/")
   .get(categoryController.getCategories)
-  .post(userMiddleware.isUserLoggedIn,userMiddleware.restrictTo(Role.Admin), categoryController.addCategory);
+  .post(
+    userMiddleware.isUserLoggedIn,
+    userMiddleware.accessTo(Role.Admin),
+    categoryController.addCategory,
+  );
 
 router
   .route("/:id")
-  .patch(categoryController.updateCategory)
-  .delete(categoryController.deleteCategory);
+  .patch(userMiddleware.accessTo(Role.Admin), categoryController.updateCategory)
+  .delete(
+    userMiddleware.accessTo(Role.Admin),
+    categoryController.deleteCategory,
+  );
 
 export default router;
