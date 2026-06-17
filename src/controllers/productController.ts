@@ -2,14 +2,14 @@ import type { Request, Response } from "express";
 import Product from "../models/productModel.ts";
 import Category from "../models/categoryModel.ts";
 
-interface IProductRequest extends Request {
-  file?: {
-    filename: string;
-  };
-}
+// interface IProductRequest extends Request {
+//   file?: {
+//     filename: string;
+//   };
+// }
 
 class ProductController {
-  async createProduct(req: IProductRequest, res: Response): Promise<void> {
+  async createProduct(req: Request, res: Response): Promise<void> {
     const {
       productName,
       productDescription,
@@ -28,7 +28,6 @@ class ProductController {
       !productDescription ||
       !productPrice ||
       !productTotalStock ||
-      !discount ||
       !categoryId
     ) {
       res.status(400).json({
@@ -44,7 +43,7 @@ class ProductController {
       productPrice,
       productTotalStock,
       discount: discount || 0,
-      categoryId,
+      categoryId: categoryId,
       productImageUrl: filename,
     });
 
@@ -57,6 +56,7 @@ class ProductController {
       include: [
         {
           model: Category,
+          attributes: ["id", "categoryName"],
         },
       ],
     });
@@ -76,6 +76,7 @@ class ProductController {
       include: [
         {
           model: Category,
+          attributes: ["id", "categoryName"],
         },
       ],
     });
