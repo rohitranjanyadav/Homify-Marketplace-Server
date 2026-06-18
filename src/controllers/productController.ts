@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import Product from "../models/productModel.ts";
-import Category from "../models/categoryModel.ts";
+import Product from "../database/models/productModel.ts";
+import Category from "../database/models/categoryModel.ts";
 
 // interface IProductRequest extends Request {
 //   file?: {

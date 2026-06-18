@@ -1,5 +1,5 @@
 import { envConfig } from "./src/config/config.ts";
-import User from "./src/models/userModel.ts";
+import User from "./src/database/models/userModel.ts";
 import bcrypt from "bcrypt";
 
 const adminSeeder = async () => {

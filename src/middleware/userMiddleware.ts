@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { envConfig } from "../config/config.ts";
-import User from "../models/userModel.ts";
+import User from "../database/models/userModel.ts";
 
 export enum Role {
   Admin = "admin",

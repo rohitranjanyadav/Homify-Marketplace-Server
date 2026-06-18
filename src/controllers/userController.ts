@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import User from "../models/userModel.ts";
+import User from "../database/models/userModel.ts";
 import bcrypt from "bcrypt";
 import generateToken from "../services/generateToken.ts";
 import generateOtp from "../services/generateOtp.ts";

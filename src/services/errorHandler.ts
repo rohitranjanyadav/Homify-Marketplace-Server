@@ -1,4 +1,4 @@
-import { json, type Request, type Response } from "express";
+import { type Request, type Response } from "express";
 
 const errorHandler = (fn: Function) => {
   return (req: Request, res: Response) => {

@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import Category from "../models/categoryModel.ts";
+import Category from "../database/models/categoryModel.ts";
 
 class CategoryController {
   categoryData = [
