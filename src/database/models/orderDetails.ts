@@ -1,8 +1,8 @@
 import { Table, Column, DataType, Model } from "sequelize-typescript";
 
 @Table({
-  tableName: "orders",
-  modelName: "Order",
+  tableName: "orderDetails",
+  modelName: "OrderDetails",
   timestamps: true,
 })
 class OrderDetails extends Model {
