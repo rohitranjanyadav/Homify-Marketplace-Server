@@ -17,24 +17,42 @@ sequelize.addModels([Category]);
 sequelize.addModels([OrderDetails]);
 sequelize.addModels([Payment]);
 sequelize.addModels([Order]);
-console.log(sequelize.models);
 
-try {
-  sequelize
-    .authenticate()
-    .then(() => console.log("Authenticated"))
-    .catch((err) => console.log("Error authenticating", err));
-} catch (error) {
-  console.log(error);
+function registerAssociations() {
+  Category.hasOne(Product, { foreignKey: "categoryId" });
+  Product.belongsTo(Category, { foreignKey: "categoryId" });
+
+  // User X Order
+  User.hasMany(Order, { foreignKey: "userId" });
+  Order.belongsTo(User, { foreignKey: "userId" });
+
+  // Payment X Order
+  Order.hasOne(Payment, { foreignKey: "orderId" });
+  Payment.belongsTo(Order, { foreignKey: "orderId" });
+
+  Order.hasOne(OrderDetails, { foreignKey: "orderId" });
+  OrderDetails.belongsTo(Order, { foreignKey: "orderId" });
+
+  Product.hasMany(OrderDetails, { foreignKey: "productId" });
+  OrderDetails.belongsTo(Product, { foreignKey: "productId" });
+
 }
 
-// alter: true --> to migrate
-sequelize.sync({ force: false, alter: false }).then(() => {
-  console.log("Local changes injected to Database successfully");
-});
+async function initializeDatabase() {
+  try {
+    await sequelize.authenticate();
+    console.log("Authenticated");
 
-// Relationships
-Product.belongsTo(Category, { foreignKey: "categoryId" });
-Category.hasOne(Product, { foreignKey: "categoryId" });
+    registerAssociations();
+
+    await sequelize.sync({ force: false, alter: true });
+    console.log("Local changes injected to Database successfully");
+  } catch (error) {
+    console.error("Database initialization failed:", error);
+    process.exit(1);
+  }
+}
+
+export const dbInitialized = initializeDatabase();
 
 export default sequelize;
