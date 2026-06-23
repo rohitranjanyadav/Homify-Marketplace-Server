@@ -45,7 +45,7 @@ async function initializeDatabase() {
 
     registerAssociations();
 
-    await sequelize.sync({ force: false, alter: true });
+    await sequelize.sync({ force: false, alter: false });
     console.log("Local changes injected to Database successfully");
   } catch (error) {
     console.error("Database initialization failed:", error);
