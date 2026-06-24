@@ -3,6 +3,7 @@ import Order from "../database/models/orderModel.ts";
 import OrderDetails from "../database/models/orderDetails.ts";
 import { PaymentMethod } from "../globals/types/index.ts";
 import Payment from "../database/models/paymentModel.ts";
+import axios from "axios";
 
 interface IProduct {
   productId: string;
@@ -56,18 +57,42 @@ class OrderController {
     });
 
     // Payment
-    if (paymentMethod == PaymentMethod.COD) {
-      await Payment.create({
-        orderId: orderData.id,
-        paymentMethod: paymentMethod,
+
+    const paymentData = await Payment.create({
+      orderId: orderData.id,
+      paymentMethod: paymentMethod,
+    });
+
+    if (paymentMethod == PaymentMethod.Khalti) {
+      const data = {
+        return_url: "http://localhost:5173/",
+        website_url: "http://localhost:5173/",
+        amount: totalAmount * 100,
+        purchase_order_id: orderData.id,
+        purchase_order_name: "order_" + orderData.id,
+      };
+      const response = await axios.post(
+        "https://a.khalti.com/api/v2/epayment/initiate/",
+        data,
+        {
+          headers: {
+            Authorization: "Key 41fe37d53ec44322905f82dd7703724f",
+          },
+        },
+      );
+
+      // console.log(response);
+
+      const khaltiResponse = response.data;
+      paymentData.pidx = khaltiResponse.pidx;
+      paymentData.save();
+
+      res.status(201).json({
+        message: "Order created successfully",
+        url: khaltiResponse.payment_url,
       });
-    } else if (paymentMethod == PaymentMethod.Khalti) {
     } else {
     }
-
-    res.status(201).json({
-      message: "Order created successfully",
-    });
   }
 }
 
