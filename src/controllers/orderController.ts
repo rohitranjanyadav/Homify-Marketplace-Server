@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import Order from "../database/models/orderModel.ts";
 import OrderDetails from "../database/models/orderDetails.ts";
-import { PaymentMethod } from "../globals/types/index.ts";
+import { PaymentMethod, PaymentStatus } from "../globals/types/index.ts";
 import Payment from "../database/models/paymentModel.ts";
 import axios from "axios";
 
@@ -90,8 +90,58 @@ class OrderController {
       res.status(201).json({
         message: "Order created successfully",
         url: khaltiResponse.payment_url,
+        pidx: khaltiResponse.pidx,
+      });
+    } else if (paymentMethod == PaymentMethod.Esewa) {
+      // <-------->
+    } else {
+      res.status(200).json({
+        message: "Order created successfully",
+      });
+    }
+  }
+
+  async verifyTransaction(req: OrderRequest, res: Response): Promise<void> {
+    const { pidx } = req.body;
+
+    if (!pidx) {
+      res.status(400).json({
+        message: "Please provide pidx",
+      });
+      return;
+    }
+
+    const response = await axios.post(
+      "https://a.khalti.com/api/v2/epayment/lookup/",
+      {
+        pidx: pidx,
+      },
+      {
+        headers: {
+          Authorization: "Key 41fe37d53ec44322905f82dd7703724f",
+        },
+      },
+    );
+
+    const data = response.data;
+
+    if (data.status === "Completed") {
+      await Payment.update(
+        { paymentStatus: PaymentStatus.Paid },
+        {
+          where: {
+            pidx: pidx,
+          },
+        },
+      );
+
+      res.status(200).json({
+        message: "Payment verified successfully!!",
       });
     } else {
+      res.status(200).json({
+        message: "Payment not verified or cancelled!!",
+      });
     }
   }
 }
