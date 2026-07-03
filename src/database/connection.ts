@@ -6,6 +6,7 @@ import Category from "./models/categoryModel.ts";
 import Order from "./models/orderModel.ts";
 import OrderDetails from "./models/orderDetails.ts";
 import Payment from "./models/paymentModel.ts";
+import Cart from "./models/cartModel.ts";
 
 const sequelize = new Sequelize(envConfig.connectionString as string, {
   dialect: "postgres",
@@ -17,6 +18,7 @@ sequelize.addModels([Category]);
 sequelize.addModels([OrderDetails]);
 sequelize.addModels([Payment]);
 sequelize.addModels([Order]);
+sequelize.addModels([Cart]);
 
 function registerAssociations() {
   Category.hasOne(Product, { foreignKey: "categoryId" });
@@ -36,6 +38,11 @@ function registerAssociations() {
   Product.hasMany(OrderDetails, { foreignKey: "productId" });
   OrderDetails.belongsTo(Product, { foreignKey: "productId" });
 
+  Cart.belongsTo(User, { foreignKey: "userId" });
+  User.hasOne(Cart, { foreignKey: "userId" });
+
+  Cart.belongsTo(Product,{foreignKey:"productId"})
+  Product.hasMany(Cart,{foreignKey:"productId"})
 }
 
 async function initializeDatabase() {
@@ -45,7 +52,7 @@ async function initializeDatabase() {
 
     registerAssociations();
 
-    await sequelize.sync({ force: false, alter: false });
+    await sequelize.sync({ force: false, alter: true });
     console.log("Local changes injected to Database successfully");
   } catch (error) {
     console.error("Database initialization failed:", error);
