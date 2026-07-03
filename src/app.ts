@@ -4,7 +4,8 @@ import "./database/connection.ts";
 import userRoute from "./routes/userRoute.ts";
 import categoryRoute from "./routes/categoryRoute.ts";
 import productRoute from "./routes/productRoute.ts";
-import orderRoute from "./routes/orderRoute.ts"
+import orderRoute from "./routes/orderRoute.ts";
+import cartRoute from "./routes/cartRoute.ts";
 
 const app = express();
 app.use(express.json());
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use("/api/auth", userRoute);
 app.use("/api/category", categoryRoute);
 app.use("/api/product", productRoute);
-app.use("/api/order", orderRoute)
+app.use("/api/order", orderRoute);
+app.use("/app/cart", cartRoute);
 
 export default app;
