@@ -14,6 +14,6 @@ app.use("/api/auth", userRoute);
 app.use("/api/category", categoryRoute);
 app.use("/api/product", productRoute);
 app.use("/api/order", orderRoute);
-app.use("/app/cart", cartRoute);
+app.use("/api/cart", cartRoute);
 
 export default app;
