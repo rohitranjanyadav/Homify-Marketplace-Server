@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import Cart from "../database/models/cartModel.ts";
 import Product from "../database/models/productModel.ts";
+import Category from "../database/models/categoryModel.ts";
 
 interface AuthRequest extends Request {
   user?: {
@@ -37,8 +38,26 @@ class CartController {
         quantity,
       });
     }
+
+    const cartData = await Cart.findAll({
+      where: {
+        userId,
+      },
+      include: [
+        {
+          model: Product,
+          include: [
+            {
+              model: Category,
+            },
+          ],
+        },
+      ],
+    });
+
     res.status(200).json({
       message: "Product added to Cart",
+      data: cartData,
     });
   }
 
