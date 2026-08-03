@@ -4,6 +4,7 @@ import OrderDetails from "../database/models/orderDetails.ts";
 import { PaymentMethod, PaymentStatus } from "../globals/types/index.ts";
 import Payment from "../database/models/paymentModel.ts";
 import axios from "axios";
+import Cart from "../database/models/cartModel.ts";
 
 interface IProduct {
   productId: string;
@@ -20,15 +21,25 @@ class OrderController {
   async createOrder(req: OrderRequest, res: Response) {
     const userId = req.user?.id;
 
-    const { phoneNumber, shippingAddress, totalAmount, paymentMethod } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      shippingAddress,
+      totalAmount,
+      paymentMethod,
+    } = req.body;
     const products: IProduct[] = req.body.products;
 
     if (
       !phoneNumber ||
       !shippingAddress ||
       !totalAmount ||
-      products.length == 0
+      products.length == 0 ||
+      !firstName ||
+      !lastName ||
+      !email
     ) {
       res.status(400).json({
         message:
@@ -39,6 +50,9 @@ class OrderController {
 
     // Order
     const orderData = await Order.create({
+      firstName,
+      lastName,
+      email,
       phoneNumber,
       shippingAddress,
       totalAmount,
@@ -47,17 +61,24 @@ class OrderController {
     // console.log("Order Data: ", orderData);
     // console.log("products: ", products);
 
+    let data;
     // Order Details
     products.forEach(async function (product) {
-      await OrderDetails.create({
+      data = await OrderDetails.create({
         quantity: product.productQty,
         productId: product.productId,
         orderId: orderData.id,
       });
+
+      await Cart.destroy({
+        where: {
+          productId: product.productId,
+          userId: userId,
+        },
+      });
     });
 
     // Payment
-
     const paymentData = await Payment.create({
       orderId: orderData.id,
       paymentMethod: paymentMethod,
@@ -91,12 +112,14 @@ class OrderController {
         message: "Order created successfully",
         url: khaltiResponse.payment_url,
         pidx: khaltiResponse.pidx,
+        data,
       });
     } else if (paymentMethod == PaymentMethod.Esewa) {
       // <-------->
     } else {
       res.status(200).json({
         message: "Order created successfully",
+        data,
       });
     }
   }

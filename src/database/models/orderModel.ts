@@ -17,6 +17,24 @@ class Order extends Model {
   @Column({
     type: DataType.STRING,
     allowNull: false,
+  })
+  declare firstName: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  declare lastName: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  declare email: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
     validate: {
       len: {
         args: [10, 10],

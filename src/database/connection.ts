@@ -41,8 +41,8 @@ function registerAssociations() {
   Cart.belongsTo(User, { foreignKey: "userId" });
   User.hasOne(Cart, { foreignKey: "userId" });
 
-  Cart.belongsTo(Product,{foreignKey:"productId"})
-  Product.hasMany(Cart,{foreignKey:"productId"})
+  Cart.belongsTo(Product, { foreignKey: "productId" });
+  Product.hasMany(Cart, { foreignKey: "productId" });
 }
 
 async function initializeDatabase() {
